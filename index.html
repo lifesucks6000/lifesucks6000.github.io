@@ -1,107 +1,359 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Your Name - Unique Portfolio</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naveen Singh - Software Sorcerer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-        background-color: #000;
-        color: #fff;
-        overflow: hidden;
-      }
-      #canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: -1;
-      }
-      .content {
-        position: relative;
-        z-index: 1;
-        padding: 20px;
-        text-align: center;
-      }
-      h1 {
-        font-size: 3em;
-        margin-bottom: 0.5em;
-      }
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Fira Code', monospace;
+            background-color: #f9f9f9;
+            color: #333;
+            overflow-x: hidden;
+        }
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .loading-content {
+            text-align: center;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #3498db;
+            border-top: 3px solid #f9f9f9;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #scene-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+		body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('C:/Users/naveena/Downloads/inspiration1/loading.gif');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.05;
+            z-index: -2;
+        }
+
+        #scene-container {
+            z-index: -1;
+        }
+
+        .content {
+            background-color: rgba(249, 249, 249, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .content {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 2rem;
+            padding: 2rem;
+        }
+        .left-column, .right-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .profile-image {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        h1 {
+            font-size: 4rem;
+            color: #2c3e50;
+            margin-bottom: 0.2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .japanese-name {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 2rem;
+            color: #34495e;
+            margin-bottom: 1rem;
+        }
+        .subtitle {
+            font-size: 1.5rem;
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+        }
+        .japanese {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 1rem;
+            color: #95a5a6;
+            margin-bottom: 2rem;
+        }
+        .description {
+            max-width: 800px;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .highlight-blue { color: #3498db; }
+        .highlight-green { color: #2ecc71; }
+        .highlight-orange { color: #e67e22; }
+        .highlight-purple { color: #9b59b6; }
+        .japanese-description {
+            font-family: 'Noto Sans JP', sans-serif;
+            max-width: 800px;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #7f8c8d;
+        }
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .skill {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: #fff;
+            padding: 0.7rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 6px rgba(52, 152, 219, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .skill:hover {
+            transform: translateY(-3px) rotate(3deg);
+            box-shadow: 0 6px 8px rgba(52, 152, 219, 0.4);
+        }
+        .contact {
+            display: flex;
+            gap: 1rem;
+        }
+        .contact a {
+            color: #2c3e50;
+            font-size: 2rem;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+        .contact a:hover {
+            transform: scale(1.2) rotate(5deg);
+            color: #3498db;
+        }
+        .floating-element {
+            position: absolute;
+            font-size: 1rem;
+            color: rgba(52, 152, 219, 0.5);
+            pointer-events: none;
+        }
+        #cursor-follower {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(52, 152, 219, 0.5);
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+        }
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        .circle-1 {
+            width: 300px;
+            height: 300px;
+            background-color: #3498db;
+            top: -50px;
+            left: -100px;
+        }
+        .circle-2 {
+            width: 200px;
+            height: 200px;
+            background-color: #2ecc71;
+            bottom: 50px;
+            right: -50px;
+        }
     </style>
-  </head>
-  <body>
-    <canvas id="canvas"></canvas>
-    <div class="content">
-      <h1>Your Name</h1>
-      <p>Welcome to my unique portfolio!</p>
-      <!-- Add more content here -->
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>ロード中... Loading...</p>
+        </div>
     </div>
 
+    <div id="scene-container"></div>
+    <div id="cursor-follower"></div>
+
+    <div class="content">
+        <div class="left-column">
+            <div class="profile-image">
+                <img src="./profileimage.png" alt="Naveen Singh">
+            </div>
+            <h1>Naveen Singh</h1>
+            <p class="japanese-name">ナヴィーン・シン</p>
+            <p class="subtitle">Software Sorcerer | Code Conjurer | Anime Aficionado</p>
+            <p class="japanese">ソフトウェア魔術師 | コード召喚士 | アニメ愛好家</p>
+            <div class="contact">
+                <a href="https://github.com/lifesucks6000" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/naveen-singh-93b40a1ba/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
+                <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+        <div class="right-column">
+            <p class="description">
+                Greetings, fellow digital adventurers! I'm Naveen, a <span class="highlight-blue">code-wielding wizard</span> with a penchant for turning caffeine into elegant algorithms. When I'm not <span class="highlight-green">battling bugs</span> or <span class="highlight-orange">summoning full-stack marvels</span>, you'll find me lost in the captivating realms of anime or strategizing my next football match victory. My superpower? <span class="highlight-purple">Learning new skills faster than you can say "npm install"</span>. Welcome to my digital dojo!
+            </p>
+            <p class="japanese-description">
+                デジタル冒険者の皆さん、こんにちは！私はNaveenです。カフェインを優雅なアルゴリズムに変える才能を持つコード使いの魔法使いです。バグと戦ったりフルスタックの驚異を召喚したりしていないときは、アニメの魅惑的な世界に没頭したり、次のサッカーの試合の勝利戦略を練ったりしています。私の超能力？「npm install」と言う間もなく新しいスキルを習得することです。私のデジタル道場へようこそ！
+            </p>
+            <div class="skills">
+                <span class="skill">JavaScript Sorcery</span>
+                <span class="skill">Python Enchantments</span>
+                <span class="skill">React Incantations</span>
+                <span class="skill">Node.js Rituals</span>
+                <span class="skill">Database Divination</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="decorative-circle circle-1"></div>
+    <div class="decorative-circle circle-2"></div>
+
     <script>
-      const canvas = document.getElementById("canvas");
-      const ctx = canvas.getContext("2d");
+        // Three.js Scene
+        let scene, camera, renderer, particles;
 
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+        function initScene() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('scene-container').appendChild(renderer.domElement);
 
-      function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
+            // Create particles
+            const geometry = new THREE.BufferGeometry();
+            const vertices = [];
+            for (let i = 0; i < 5000; i++) {
+                vertices.push(
+                    Math.random() * 2000 - 1000,
+                    Math.random() * 2000 - 1000,
+                    Math.random() * 2000 - 1000
+                );
+            }
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            const material = new THREE.PointsMaterial({ color: 0x3498db, size: 2, transparent: true, opacity: 0.7 });
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
 
-      window.addEventListener("resize", resizeCanvas);
-
-      class Particle {
-        constructor() {
-          this.x = Math.random() * canvas.width;
-          this.y = Math.random() * canvas.height;
-          this.size = Math.random() * 5 + 1;
-          this.speedX = Math.random() * 3 - 1.5;
-          this.speedY = Math.random() * 3 - 1.5;
+            camera.position.z = 1000;
         }
 
-        update() {
-          this.x += this.speedX;
-          this.y += this.speedY;
-
-          if (this.size > 0.2) this.size -= 0.1;
+        function animate() {
+            requestAnimationFrame(animate);
+            particles.rotation.x += 0.0002;
+            particles.rotation.y += 0.0003;
+            renderer.render(scene, camera);
         }
 
-        draw() {
-          ctx.fillStyle = "white";
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-          ctx.fill();
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         }
-      }
 
-      const particleArray = [];
+        window.addEventListener('resize', onWindowResize);
 
-      function init() {
-        for (let i = 0; i < 100; i++) {
-          particleArray.push(new Particle());
+        // Floating Japanese words
+        const japaneseWords = ['ようこそ', 'クリエイティブ', '革新的', '情熱的', 'コード', 'アニメ', '魔法', '冒険'];
+        function addFloatingText() {
+            japaneseWords.forEach((word, index) => {
+                const element = document.createElement('div');
+                element.className = 'floating-element';
+                element.textContent = word;
+                element.style.top = `${Math.random() * 80 + 10}%`;
+                element.style.left = `${Math.random() * 80 + 10}%`;
+                document.body.appendChild(element);
+
+                gsap.to(element, {
+                    y: '+=50',
+                    x: '+=30',
+                    rotation: Math.random() * 20 - 10,
+                    opacity: 0.3,
+                    duration: 2,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: 'sine.inOut',
+                    delay: index * 0.5
+                });
+            });
         }
-      }
 
-      function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < particleArray.length; i++) {
-          particleArray[i].update();
-          particleArray[i].draw();
+        // Cursor follower
+        const cursorFollower = document.getElementById('cursor-follower');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursorFollower, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.1
+            });
+        });
 
-          if (particleArray[i].size <= 0.2) {
-            particleArray.splice(i, 1);
-            i--;
-            particleArray.push(new Particle());
-          }
-        }
-        requestAnimationFrame(animate);
-      }
-
-      init();
-      animate();
+        // Initialize
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+                initScene();
+                animate();
+                addFloatingText();
+            }, 3000);
+        });
     </script>
-  </body>
+</body>
 </html>
